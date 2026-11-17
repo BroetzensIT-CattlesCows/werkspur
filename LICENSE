@@ -1,0 +1,20 @@
+Werkspur – Produkt-Website
+SPDX-FileCopyrightText: 2026 Broetzens IT (Johannes Brötz) und Werkspur-Mitwirkende
+
+Inhalte dieser Website (Texte, Bildschirmfotos, HTML und CSS) stehen unter der
+Creative Commons Namensnennung 4.0 International (CC BY 4.0), wie die Werkspur-Dokumentation:
+https://creativecommons.org/licenses/by/4.0/legalcode.de
+
+Ausgenommen sind:
+
+1. Werkspur-Logo, Wortmarke und App-Icon (Inline-SVG im Seitenkopf von index.html,
+   favicon.svg, favicon-32.png, apple-touch-icon.png). Sie sind Kennzeichen von Broetzens IT
+   (Johannes Brötz), alle Rechte vorbehalten. Erlaubt ist die Verwendung zur Kennzeichnung
+   unveränderter Werkspur-Versionen; Veränderung, Umfärben außerhalb der freigegebenen
+   Farbversionen oder Nutzung für Forks und andere Produkte nur mit Zustimmung.
+   Siehe TRADEMARKS.md im Werkspur-Repository.
+
+2. Schriften in fonts/ (IBM Plex Sans, IBM Plex Mono): SIL Open Font License 1.1,
+   siehe fonts/OFL.txt.
+
+Der Code von Werkspur selbst steht unter der EUPL-1.2; diese Website enthält keinen Werkspur-Code.

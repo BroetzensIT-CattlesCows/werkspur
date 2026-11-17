@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Werkspur – Verkehrssicherung kontrollieren, beauftragen, nachweisen</title>
+<meta name="description" content="Offene Plattform für Verkehrssicherungskontrollen: Bäume nach FLL, Spielplätze nach DIN EN 1176. Aufträge an Dienstleister oder den eigenen Bauhof, Feldarbeit offline in QField, Mängel bis zur Abnahme, Nachweis mit Hash-Kette und RFC-3161-Zeitstempel. Open Source, selbst betreibbar oder gehostet.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0e4d5a">
+<meta property="og:title" content="Werkspur – Verkehrssicherung kontrollieren, beauftragen, nachweisen">
+<meta property="og:description" content="Baumkontrolle und Spielplatzkontrolle vom Auftrag bis zum prüfbaren Nachweis. Offline in QField, offen unter EUPL-1.2, selbst betreibbar mit Docker Compose oder gehostet von Broetzens IT.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="bilder/lagebild-1440.webp">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preload" href="fonts/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Werkspur",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Docker, Web",
+  "description": "Offene Plattform für Verkehrssicherungskontrollen: Bäume nach FLL, Spielplätze nach DIN EN 1176, Feldarbeit offline in QField, Mängel und Maßnahmen bis zur Abnahme, Nachweis mit Hash-Kette und RFC-3161-Zeitstempel, REST-API und MCP.",
+  "isAccessibleForFree": true,
+  "license": "https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12",
+  "codeRepository": "https://github.com/BroetzensIT-CattlesCows/werkspur",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+  "author": {"@type": "Organization", "name": "Broetzens IT", "address": {"@type": "PostalAddress", "addressLocality": "Kassel", "addressCountry": "DE"}}
+}
+</script>
+<style>
+/* Schriften liegen neben der Seite: keine Requests an Dritte. IBM Plex, Lizenz: fonts/OFL.txt */
+@font-face{font-family:"IBM Plex Sans";font-weight:400;font-style:normal;font-display:swap;src:url(fonts/IBMPlexSans-Regular.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-weight:600;font-style:normal;font-display:swap;src:url(fonts/IBMPlexSans-SemiBold.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:400;font-style:normal;font-display:swap;src:url(fonts/IBMPlexMono-Regular.woff2) format("woff2")}
+
+/* Farben aus dem Werkspur Design System (design/tokens.json); Dunkel abgeleitet mit denselben Namen */
+:root{
+  --surface:#ffffff;
+  --surface-sunken:#f3f4f5;
+  --surface-raised:#ffffff;
+  --text-primary:#111111;
+  --text-secondary:#3d4650;
+  --text-muted:#566069;
+  --border-subtle:#d5d9de;
+  --border-control:#6b747e;
+  --brand:#0e4d5a;
+  --brand-strong:#0a3c46;
+  --brand-subtle:#e6eff1;
+  --on-brand:#ffffff;
+  --focus-ring:#0e4d5a;
+  --code-bg:#111111;
+  --code-text:#eef0f2;
+  --code-dim:#a9b2bb;
+  --status-open:#5c6670;
+  --status-open-text:#434c55;
+  --status-open-surface:#eef0f2;
+  --status-done:#00785a;
+  --status-done-text:#00553f;
+  --status-done-surface:#e3f3ec;
+  --status-defect:#e8a200;
+  --status-defect-text:#6e4200;
+  --status-defect-surface:#fff3d6;
+  --status-progress-text:#17468c;
+  --status-progress-surface:#e7effa;
+  --halo:#ffffff;
+  --shadow-sm:0 1px 2px rgba(17,17,17,.16);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --surface:#15181b;
+    --surface-sunken:#0f1113;
+    --surface-raised:#1c2024;
+    --text-primary:#eef0f2;
+    --text-secondary:#c3cad1;
+    --text-muted:#a7b0b9;
+    --border-subtle:#30363c;
+    --border-control:#8a949e;
+    --brand:#7fc6d3;
+    --brand-strong:#a8dbe4;
+    --brand-subtle:#17323a;
+    --on-brand:#0a2a31;
+    --focus-ring:#7fc6d3;
+    --code-bg:#0b0d0f;
+    --code-text:#eef0f2;
+    --code-dim:#a9b2bb;
+    --status-open:#9aa4ae;
+    --status-open-text:#d3d9de;
+    --status-open-surface:#262b30;
+    --status-done:#2fb48c;
+    --status-done-text:#8fe0c4;
+    --status-done-surface:#12302a;
+    --status-defect:#e8a200;
+    --status-defect-text:#ffd27a;
+    --status-defect-surface:#352a10;
+    --status-progress-text:#a9c7f5;
+    --status-progress-surface:#18263b;
+    --halo:#15181b;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.5);
+  }
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:72px}
+body{
+  margin:0;background:var(--surface);color:var(--text-primary);
+  font-family:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;font-size:1.0625rem;line-height:1.55;
+  overflow-x:hidden;
+}
+a{color:var(--brand);text-underline-offset:.15em}
+a:hover{color:var(--brand-strong)}
+:focus-visible{outline:3px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+h1,h2,h3{font-weight:600;line-height:1.15;letter-spacing:-.01em;margin:0;text-wrap:balance}
+p{margin:0 0 1rem;max-width:38em}
+img{max-width:100%;height:auto;display:block}
+.wrap{max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,32px)}
+.mono,code,pre{font-family:"IBM Plex Mono",Menlo,Consolas,monospace}
+.skip{position:fixed;left:-9999px;top:0;z-index:60;background:var(--brand);color:var(--on-brand);padding:.6rem 1rem;font-weight:600;border-radius:0 0 8px 8px}
+.skip:focus{left:16px;color:var(--on-brand)}
+
+/* Kopfzeile: Logo ohne Absender, Schutzraum rundum */
+.bar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border-subtle)}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:1rem}
+.mark{display:flex;align-items:center;color:var(--brand);padding:6px 0}
+.logo{height:26px;width:auto;display:block}
+.bar nav{display:flex;gap:1.25rem;font-weight:600;font-size:.95rem}
+.bar nav a{color:var(--text-primary);text-decoration:none;padding:.4rem 0;border-bottom:2px solid transparent}
+.bar nav a:hover{border-color:var(--brand);color:var(--text-primary)}
+@media (max-width:720px){.bar nav a:not(.keep){display:none}}
+
+/* Knöpfe: eine primäre Aktion in Petrol, sonst Kontur */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;
+  font-weight:600;font-size:1rem;line-height:1.2;padding:.7rem 1.15rem;border-radius:8px;
+  text-decoration:none;color:var(--text-primary);background:var(--surface);border:2px solid var(--border-control);
+  transition:background-color .15s ease,border-color .15s ease,color .15s ease;
+}
+.btn:hover{border-color:var(--text-primary);color:var(--text-primary);background:var(--surface-sunken)}
+.btn-primary{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.btn-primary:hover{background:var(--brand-strong);border-color:var(--brand-strong);color:var(--on-brand)}
+.ctas{display:flex;flex-wrap:wrap;gap:.75rem;margin:1.75rem 0 1.5rem}
+
+/* Einstieg */
+.hero{padding:clamp(2.5rem,7vw,5rem) 0 clamp(2rem,5vw,3rem)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:2.5rem;align-items:center}
+.kicker{font-size:.95rem;font-weight:600;color:var(--brand);margin:0 0 .75rem}
+.hero h1{font-size:clamp(2.1rem,5vw,3.6rem);margin-bottom:1.25rem;max-width:16em}
+.lead{font-size:clamp(1.12rem,2vw,1.3rem);color:var(--text-secondary);max-width:34em}
+.audience{font-size:1rem;color:var(--text-secondary);border-left:3px solid var(--brand);padding-left:.9rem;margin:0}
+
+/* Bildschirmfotos: echte Ansichten aus der Testumgebung mit Demodaten */
+.shot{margin:0}
+.shot-frame{border:1px solid var(--border-subtle);border-radius:12px;overflow:hidden;background:#ffffff;box-shadow:var(--shadow-sm)}
+.shot-frame img{width:100%}
+.shot figcaption{font-size:.9rem;color:var(--text-secondary);margin-top:.6rem;max-width:60em}
+
+/* Ablauf */
+.sec{padding:clamp(3.5rem,8vw,6rem) 0;border-top:1px solid var(--border-subtle)}
+.sec-sunken{background:var(--surface-sunken)}
+.sec h2{font-size:clamp(1.8rem,3.6vw,2.6rem);margin-bottom:1rem;max-width:20em}
+.sec-lead{font-size:1.15rem;color:var(--text-secondary);margin-bottom:2.5rem;max-width:40em}
+.steps{list-style:none;margin:0;padding:0;counter-reset:schritt}
+.step{display:grid;grid-template-columns:minmax(0,1fr);gap:1.75rem 3rem;padding:2.5rem 0;border-top:1px solid var(--border-subtle);align-items:start}
+.step:first-child{border-top:0;padding-top:.5rem}
+@media (min-width:960px){
+  .step{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+  .step:nth-child(even){grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+  .step:nth-child(even) .step-text{order:2}
+}
+.step-no{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;border:2px solid var(--brand);color:var(--brand);font-weight:600;font-size:1.15rem;margin-bottom:1rem}
+.step h3{font-size:clamp(1.4rem,2.6vw,1.85rem);margin-bottom:.75rem}
+.points{margin:0;padding:0;list-style:none;max-width:38em}
+.points li{padding:.45rem 0 .45rem 1.6rem;position:relative;border-top:1px solid var(--border-subtle)}
+.points li::before{content:"";position:absolute;left:.15rem;top:.95rem;width:.45rem;height:.8rem;border:solid var(--status-done);border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+
+/* Feldkarte als Schema: Statusformen wie in QField */
+.field{border:1px solid var(--border-subtle);border-radius:12px;background:var(--surface-raised);padding:1rem;box-shadow:var(--shadow-sm)}
+.field svg{display:block;width:100%;height:auto}
+.f-ground{fill:var(--surface-sunken)}
+.f-path{fill:none;stroke:var(--border-subtle);stroke-width:10;stroke-linecap:round}
+.f-area{fill:none;stroke:var(--text-muted);stroke-width:2;stroke-dasharray:6 5}
+.f-open{fill:var(--halo);stroke:var(--status-open);stroke-width:3}
+.f-done{fill:var(--status-done)}
+.f-tick{fill:none;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.f-defect{fill:var(--status-defect);stroke:#6e4200;stroke-width:2;stroke-linejoin:round}
+.f-bang{fill:#111111}
+.f-route{fill:none;stroke:var(--brand);stroke-width:3;stroke-dasharray:2 7;stroke-linecap:round}
+.f-me{fill:var(--brand);stroke:var(--halo);stroke-width:3}
+.f-bar{fill:var(--surface);stroke:var(--border-subtle)}
+.f-t{font-family:"IBM Plex Sans",Arial,sans-serif;font-size:15px;fill:var(--text-primary)}
+.f-t b,.f-tb{font-weight:600}
+.f-btn{fill:var(--brand)}
+.f-btn-t{font-family:"IBM Plex Sans",Arial,sans-serif;font-size:14px;font-weight:600;fill:var(--on-brand)}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem 1.25rem;list-style:none;margin:.75rem 0 0;padding:0;font-size:.95rem;color:var(--text-secondary)}
+.legend li{display:flex;align-items:center;gap:.45rem}
+.legend svg{width:18px;height:18px;flex:none}
+
+/* Funktionen */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:1rem}
+.cell{border:1px solid var(--border-subtle);border-radius:8px;background:var(--surface-raised);padding:1.35rem 1.3rem 1.2rem}
+.cell h3{font-size:1.15rem;margin-bottom:.5rem}
+.cell p{font-size:.98rem;color:var(--text-secondary);margin:0}
+.tag{display:inline-block;font-size:.82rem;font-weight:600;line-height:1.3;padding:.15rem .5rem;border-radius:4px;margin-bottom:.7rem}
+.tag-neu{background:var(--status-done-surface);color:var(--status-done-text)}
+.tag-offline{background:var(--brand-subtle);color:var(--brand)}
+.tag-ki{background:var(--status-progress-surface);color:var(--status-progress-text)}
+.tag-bald{background:var(--status-open-surface);color:var(--status-open-text);border:1px dashed var(--border-control)}
+.note{font-size:.95rem;color:var(--text-secondary);margin:1.5rem 0 0;max-width:52em}
+.pair{margin-top:3rem;max-width:960px}
+
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:1.5rem;margin-top:3.5rem}
+.roles-title{font-size:1.35rem;margin:3.5rem 0 0}
+.roles-title + .roles{margin-top:1.25rem}
+.role{border-left:3px solid var(--brand);padding-left:1rem}
+.role h3{font-size:1.1rem;margin-bottom:.35rem}
+.role p{font-size:.97rem;color:var(--text-secondary);margin:0}
+
+/* Betrieb */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:1.5rem}
+.card{border:1px solid var(--border-subtle);border-radius:12px;background:var(--surface-raised);padding:clamp(1.25rem,3vw,2rem);display:flex;flex-direction:column}
+.card h3{font-size:1.5rem;margin-bottom:.75rem}
+.card .btn{align-self:flex-start;margin-top:auto}
+.card-brand{border:2px solid var(--brand)}
+.checks{list-style:none;margin:0 0 1.5rem;padding:0}
+.checks li{padding:.3rem 0 .3rem 1.6rem;position:relative}
+.checks li::before{content:"";position:absolute;left:.2rem;top:.65rem;width:.45rem;height:.8rem;border:solid var(--status-done);border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+
+pre{margin:0 0 1.5rem;background:var(--code-bg);color:var(--code-text);padding:1rem 1.15rem;overflow-x:auto;font-size:.85rem;line-height:1.65;border-radius:8px;tab-size:2}
+pre .c{color:var(--code-dim)}
+code{font-size:.9em}
+p code,li code,td code{background:var(--surface-sunken);border:1px solid var(--border-subtle);padding:.02rem .3rem;border-radius:4px;overflow-wrap:anywhere}
+.sec-sunken p code,.sec-sunken li code,.sec-sunken td code{background:var(--surface)}
+
+.api{display:grid;grid-template-columns:minmax(0,1fr);gap:2.5rem;align-items:start}
+@media (min-width:960px){.api{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:.55rem .6rem;border-bottom:1px solid var(--border-subtle);vertical-align:top}
+th{font-weight:600;border-bottom:2px solid var(--text-primary)}
+td code{white-space:nowrap}
+.formats{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.25rem;padding:0;list-style:none}
+.formats li{border:1px solid var(--border-control);border-radius:999px;padding:.15rem .7rem;font-weight:600;font-size:.88rem}
+.soon{border:1px dashed var(--border-control);border-radius:8px;padding:1rem 1.15rem;margin:1.5rem 0}
+.soon p{margin:0;font-size:.97rem;color:var(--text-secondary)}
+.soon .tag{margin-bottom:.5rem}
+
+/* Abschluss */
+.cta{background:var(--brand);color:var(--on-brand);border-top:0}
+.cta .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.5rem 2rem}
+.cta h2{max-width:16em;margin:0}
+.cta .ctas{margin:0}
+.cta .btn{background:var(--on-brand);color:var(--brand);border-color:var(--on-brand)}
+.cta .btn:hover{background:transparent;color:var(--on-brand)}
+.cta .btn-ghost{background:transparent;color:var(--on-brand);border-color:var(--on-brand)}
+.cta .btn-ghost:hover{background:var(--on-brand);color:var(--brand)}
+
+footer{border-top:1px solid var(--border-subtle);padding:2.5rem 0 3rem;font-size:.95rem;color:var(--text-secondary)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:1.5rem 3rem;justify-content:space-between}
+footer p{margin:0 0 .4rem}
+.sender{color:var(--text-secondary)}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#inhalt">Zum Inhalt springen</a>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="Werkspur, zum Seitenanfang"><svg class="logo" role="img" aria-label="Werkspur" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 425.04 120"><g transform="translate(0,8) scale(1.04)"><polyline points="11,41 29,79 45,53 60,75 89,21" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"></polyline></g><path d="M148.308 70.0H138.40800000000002L127.716 23.931999999999995H136.428L140.982 46.042L143.82 60.166H144.018L147.318 46.042L152.598 23.931999999999995H162.234L167.514 46.042L170.748 60.166H170.946L173.85 46.042L178.536 23.931999999999995H186.852L175.83 70.0H165.996L160.122 45.646L157.284 33.501999999999995H157.152L154.18200000000002 45.646Z M205.332 70.792Q200.25 70.792 196.62 68.581Q192.98999999999998 66.37 191.043 62.311Q189.096 58.251999999999995 189.096 52.708Q189.096 47.296 191.01 43.236999999999995Q192.92399999999998 39.178 196.488 36.967Q200.052 34.756 205.06799999999998 34.756Q210.48 34.756 213.945 37.132Q217.41 39.507999999999996 219.09300000000002 43.434999999999995Q220.776 47.361999999999995 220.776 52.114000000000004V54.885999999999996H197.874V55.744Q197.874 59.44 199.986 61.75Q202.09799999999998 64.06 206.256 64.06Q209.358 64.06 211.404 62.707Q213.45 61.354 215.034 59.373999999999995L219.588 64.456Q217.476 67.294 213.813 69.043Q210.14999999999998 70.792 205.332 70.792ZM205.2 41.092Q202.956 41.092 201.30599999999998 42.114999999999995Q199.656 43.138 198.765 44.953Q197.874 46.768 197.874 49.144V49.672H211.998V49.078Q211.998 46.635999999999996 211.206 44.887Q210.414 43.138 208.896 42.114999999999995Q207.378 41.092 205.2 41.092Z M236.022 70.0H227.574V35.548H236.022V42.676H236.352Q236.814 40.828 237.903 39.211Q238.992 37.594 240.873 36.571Q242.754 35.548 245.46 35.548H247.308V43.534H244.668Q241.82999999999998 43.534 239.88299999999998 44.095Q237.936 44.656 236.97899999999998 45.81099999999999Q236.022 46.965999999999994 236.022 48.879999999999995Z M252.85200000000003 70.0V21.159999999999997H261.3V50.596000000000004H261.63L266.184 44.391999999999996L273.906 35.548H283.476L271.596 48.879999999999995L284.73 70.0H274.69800000000004L265.85400000000004 54.556L261.3 59.506V70.0Z M299.91 70.792Q294.96000000000004 70.792 291.59400000000005 69.10900000000001Q288.228 67.426 285.654 64.456L290.802 59.44Q292.716 61.618 294.993 62.872Q297.27 64.126 300.24 64.126Q303.276 64.126 304.629 63.07Q305.982 62.013999999999996 305.982 60.166Q305.982 58.647999999999996 305.025 57.757Q304.068 56.866 301.75800000000004 56.536L298.326 56.074Q294.63 55.612 292.05600000000004 54.358000000000004Q289.482 53.104 288.16200000000003 50.926Q286.842 48.748 286.842 45.646Q286.842 40.629999999999995 290.43899999999996 37.693Q294.036 34.756 299.91 34.756Q303.276 34.756 305.685 35.382999999999996Q308.094 36.01 309.942 37.230999999999995Q311.79 38.452 313.374 40.168L308.42400000000004 45.117999999999995Q306.906 43.534 304.794 42.477999999999994Q302.682 41.422 300.17400000000004 41.422Q297.534 41.422 296.247 42.379Q294.96000000000004 43.336 294.96000000000004 44.986Q294.96000000000004 46.702 295.98300000000006 47.592999999999996Q297.00600000000003 48.483999999999995 299.44800000000004 48.879999999999995L302.946 49.342Q308.622 50.134 311.361 52.675Q314.1 55.216 314.1 59.506Q314.1 62.806 312.351 65.38Q310.60200000000003 67.954 307.401 69.37299999999999Q304.2 70.792 299.91 70.792Z M320.898 83.2V35.548H329.346V41.224000000000004H329.61Q330.534 38.254 333.14099999999996 36.504999999999995Q335.748 34.756 339.11400000000003 34.756Q343.536 34.756 346.506 36.867999999999995Q349.476 38.98 351.06 42.973Q352.644 46.965999999999994 352.644 52.708Q352.644 58.45 351.06 62.509Q349.476 66.568 346.506 68.68Q343.536 70.792 339.11400000000003 70.792Q335.748 70.792 333.174 69.00999999999999Q330.6 67.228 329.61 64.258H329.346V83.2ZM336.408 63.796Q339.708 63.796 341.754 61.584999999999994Q343.8 59.373999999999995 343.8 55.744V49.804Q343.8 46.108000000000004 341.754 43.897000000000006Q339.708 41.686 336.408 41.686Q334.428 41.686 332.81100000000004 42.379000000000005Q331.194 43.072 330.27 44.326Q329.346 45.58 329.346 47.230000000000004V58.186Q329.346 59.968 330.27 61.222Q331.194 62.476 332.81100000000004 63.135999999999996Q334.428 63.796 336.408 63.796Z M380.43 70.0V64.258H380.1Q379.242 66.832 376.99800000000005 68.812Q374.754 70.792 370.464 70.792Q365.184 70.792 362.313 67.261Q359.442 63.73 359.442 57.328V35.548H367.89V56.47Q367.89 60.034 369.276 61.915Q370.66200000000003 63.796 373.698 63.796Q375.348 63.796 376.899 63.202Q378.45 62.608 379.44 61.387Q380.43 60.166 380.43 58.318V35.548H388.878V70.0Z M406.434 70.0H397.98600000000005V35.548H406.434V42.676H406.764Q407.22600000000006 40.828 408.31500000000005 39.211Q409.40400000000005 37.594 411.2850000000001 36.571Q413.16600000000005 35.548 415.872 35.548H417.72V43.534H415.08000000000004Q412.242 43.534 410.295 44.095Q408.348 44.656 407.391 45.81099999999999Q406.434 46.965999999999994 406.434 48.879999999999995Z" fill="currentColor"></path></svg></a>
+    <nav aria-label="Hauptnavigation">
+      <a href="#ablauf">Ablauf</a>
+      <a href="#funktionen">Funktionen</a>
+      <a href="#betrieb">Betrieb</a>
+      <a href="#schnittstelle">Schnittstelle</a>
+      <a class="keep" href="https://github.com/BroetzensIT-CattlesCows/werkspur/releases">Releases</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inhalt">
+  <section class="hero" id="top" aria-labelledby="hh">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="kicker">Open Source für die Verkehrssicherung</p>
+        <h1 id="hh">Bäume und Spielplätze kontrollieren. Mängel beheben lassen. Prüfbar nachweisen.</h1>
+        <p class="lead">Werkspur bringt Kataster, Aufträge, Mängel und Nachweise an einen Ort. Kontrolliert wird draußen in QField, auch ohne Netz. Sie betreiben Werkspur selbst oder lassen es hosten.</p>
+        <div class="ctas">
+          <a class="btn btn-primary" href="https://github.com/BroetzensIT-CattlesCows/werkspur/releases">Releases auf GitHub</a>
+          <a class="btn" href="#betrieb">Selbst betreiben</a>
+        </div>
+        <p class="audience">Für Kommunen und Facility Management, Baumpflege- und Spielplatzdienstleister und den eigenen Bauhof.<br>Code unter EUPL-1.2, Fachschalen und Doku unter CC&nbsp;BY&nbsp;4.0.</p>
+      </div>
+      <figure class="shot"><div class="shot-frame"><picture><source media="(max-width: 760px)" srcset="bilder/lagebild-720.webp" width="720" height="712"><img src="bilder/lagebild-1440.webp" width="1168" height="954" alt="Lagebild mit Kennzahlen-Kacheln: überfällige und bald fällige Kontrollen je Fachschale und Prüfart, offene Mängel, gesperrte Objekte, Aufträge zur Abnahme" fetchpriority="high" decoding="async"></picture></div><figcaption>Lagebild, die Startseite der FM. Darunter folgen nächste Läufe, Ampel je Gebiet und Termintreue. Demodaten.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sec sec-sunken" id="ablauf" aria-labelledby="ah2">
+    <div class="wrap">
+      <p class="kicker">Ablauf</p>
+      <h2 id="ah2">Vom Kataster bis zum Nachweis in vier Schritten.</h2>
+      <p class="sec-lead">Die FM beauftragt, draußen wird offline gearbeitet, zurück kommt ein Nachweis. Jeder Schritt landet als Ereignis in einer Kette, die sich nicht still ändern lässt.</p>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-text">
+            <div class="step-no" aria-hidden="true">1</div>
+            <h3>Bestand übernehmen, Auftrag erteilen.</h3>
+            <p>Bäume, Spielplätze und Spielgeräte kommen aus Ihrem Kataster. Auf der Karte wählen Sie Gebiet und fällige Objekte, Werkspur baut daraus ein Auftragspaket für den Dienstleister.</p>
+            <ul class="points">
+              <li>Import aus GeoJSON, GeoPackage, CSV, Shapefile, KML, GML oder FlatGeobuf, mit Prüfbericht je Zeile vor dem Übernehmen</li>
+              <li>Fälligkeit je Objekt, beim Spielplatz je Prüfart: Routine, operativ, Hauptinspektion</li>
+              <li>Auftrag mit Fachschale, Zeitraum, Dienstleister und auf Wunsch geforderter Qualifikation</li>
+              <li>Rahmenaufträge legen wiederkehrende Kontrollen selbst an, wöchentlich bis jährlich</li>
+            </ul>
+          </div>
+          <figure class="shot"><div class="shot-frame"><picture><source media="(max-width: 760px)" srcset="bilder/auftrag-anlegen-720.webp" width="686" height="862"><img src="bilder/auftrag-anlegen-1440.webp" width="1134" height="581" alt="Karte zur Objektauswahl beim Anlegen eines Auftrags: 90 Bäume der Altstadt nach Stand, Legende mit Anzahlen, Knopf „Alle 90 angezeigten wählen“" loading="lazy" decoding="async"></picture></div><figcaption>Auftrag anlegen: Gebiet wählen, fällige Objekte auf der Karte auswählen.</figcaption></figure>
+        </li>
+        <li class="step">
+          <div class="step-text">
+            <div class="step-no" aria-hidden="true">2</div>
+            <h3>Draußen kontrollieren, auch ohne Netz.</h3>
+            <p>Die Feldkraft öffnet das Paket am Handy oder Tablet in QField. Das Werkspur-Plugin führt von Baum zu Baum, die Karte zeigt offline, was offen, kontrolliert oder mangelhaft ist.</p>
+            <ul class="points">
+              <li>„Nächster“ wählt den nächsten offenen Baum nach GPS-Standort</li>
+              <li>Unauffälliger Baum in drei Tipps: o.&nbsp;B., Vitalität und Belaubung, dann Speichern</li>
+              <li>Baum mit Befund: Formular mit Reitern für Kontrolle, Befunde, Maßnahmen und Fotos</li>
+              <li>Ohne Plugin bleibt das Paket mit Formular und Reitern voll benutzbar</li>
+            </ul>
+          </div>
+          <figure class="shot">
+            <div class="field">
+              <svg viewBox="0 0 640 400" role="img" aria-labelledby="feldt">
+                <title id="feldt">Schema der Feldkarte in QField: offene Bäume als graue Kreise, kontrollierte mit grünem Haken, ein Mangel als gelbes Dreieck; unten die Werkspur-Leiste mit „12 / 39 kontrolliert · 2 Mängel“ und dem Knopf „Nächster“.</title>
+                <rect class="f-ground" x="0" y="0" width="640" height="400" rx="6"/>
+                <path class="f-path" d="M-10,250 C120,230 220,280 340,240 S540,170 650,190"/>
+                <path class="f-path" d="M300,-10 C290,90 330,180 300,330"/>
+                <path class="f-area" d="M40,40 L590,30 L610,300 L30,310 Z"/>
+                <path class="f-route" d="M226,178 L318,134"/>
+                <g><circle class="f-done" cx="92" cy="96" r="13"/><path class="f-tick" d="M86,96 l4,4 l8,-9"/></g>
+                <g><circle class="f-done" cx="160" cy="70" r="13"/><path class="f-tick" d="M154,70 l4,4 l8,-9"/></g>
+                <g><circle class="f-done" cx="132" cy="160" r="13"/><path class="f-tick" d="M126,160 l4,4 l8,-9"/></g>
+                <g><path class="f-defect" d="M208,82 l15,26 h-30 z"/><rect class="f-bang" x="206.5" y="89" width="3" height="10" rx="1"/><rect class="f-bang" x="206.5" y="101" width="3" height="3" rx="1"/></g>
+                <g><circle class="f-done" cx="80" cy="214" r="13"/><path class="f-tick" d="M74,214 l4,4 l8,-9"/></g>
+                <circle class="f-me" cx="226" cy="178" r="8"/>
+                <circle class="f-open" cx="330" cy="128" r="12"/>
+                <circle class="f-open" cx="402" cy="92" r="12"/>
+                <circle class="f-open" cx="470" cy="140" r="12"/>
+                <circle class="f-open" cx="540" cy="82" r="12"/>
+                <circle class="f-open" cx="380" cy="196" r="12"/>
+                <circle class="f-open" cx="520" cy="220" r="12"/>
+                <g><path class="f-defect" d="M450,252 l15,26 h-30 z"/><rect class="f-bang" x="448.5" y="259" width="3" height="10" rx="1"/><rect class="f-bang" x="448.5" y="271" width="3" height="3" rx="1"/></g>
+                <rect class="f-bar" x="16" y="324" width="608" height="60" rx="10"/>
+                <text class="f-t" x="36" y="360"><tspan class="f-tb">12 / 39</tspan> kontrolliert · 2 Mängel</text>
+                <rect class="f-btn" x="488" y="334" width="120" height="40" rx="8"/>
+                <text class="f-btn-t" x="548" y="359" text-anchor="middle">Nächster</text>
+              </svg>
+            </div>
+            <ul class="legend" aria-label="Legende">
+              <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle class="f-open" cx="10" cy="10" r="7"/></svg>offen</li>
+              <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle class="f-done" cx="10" cy="10" r="9"/><path class="f-tick" d="M5.5,10 l3,3 l6,-6.5" style="stroke-width:2.2"/></svg>kontrolliert</li>
+              <li><svg viewBox="0 0 20 20" aria-hidden="true"><path class="f-defect" d="M10,2 l8.5,15 h-17 z"/></svg>Mangel</li>
+            </ul>
+            <figcaption>Schema der Werkspur-Leiste in QField, keine echten Bestandsdaten.</figcaption>
+          </figure>
+        </li>
+        <li class="step">
+          <div class="step-text">
+            <div class="step-no" aria-hidden="true">3</div>
+            <h3>Rückgabe prüfen, Mängel beheben lassen.</h3>
+            <p>Der Dienstleister lädt die Rückgabe hoch. Werkspur übernimmt die Kontrollen, erkennt Konflikte und legt Mängel mit Frist an. Aus offenen Mängeln wird ein Maßnahmenauftrag, die Erledigung nimmt die FM ab.</p>
+            <ul class="points">
+              <li>Feldweiser Abgleich: Was draußen erfasst wurde, geht nie verloren, echte Konflikte entscheidet ein Mensch</li>
+              <li>Meldung „Ausgeführt“ mit Nachher-Foto, „Teilweise“ oder „Nicht möglich“ mit Bemerkung</li>
+              <li>Abnahme einzeln, gesammelt oder mit Begründung zurückgewiesen</li>
+              <li>Rückmeldungen ohne geforderte Qualifikation werden angenommen und sichtbar markiert</li>
+            </ul>
+          </div>
+          <figure class="shot"><div class="shot-frame"><picture><source media="(max-width: 760px)" srcset="bilder/auftrag-rueckmeldungen-720.webp" width="720" height="1622"><img src="bilder/auftrag-rueckmeldungen-1440.webp" width="1168" height="1290" alt="Abgeschlossener Auftrag „Regelkontrolle Stadtpark“ mit Paketstand, Karte mit 16 kontrollierten Bäumen und 4 Mängeln und den ersten Rückmeldungen, eine davon mit Vermerk o. B." loading="lazy" decoding="async"></picture></div><figcaption>Auftrag nach der Rückgabe: Stand auf der Karte, Rückmeldungen je Baum, Abnahme und Nachweis.</figcaption></figure>
+        </li>
+        <li class="step">
+          <div class="step-text">
+            <div class="step-no" aria-hidden="true">4</div>
+            <h3>Nachweisen, prüfbar auch ohne Werkspur.</h3>
+            <p>Jedes Ereignis steht in einer unveränderbaren Hash-Kette je Organisation. Der Nachweis als PDF trägt den Kettenstand und einen Zeitstempel nach RFC&nbsp;3161.</p>
+            <ul class="points">
+              <li>Nachweis je Auftrag, Objekt oder Gebiet mit Karte, Mängeln, Abnahme und Fotos mit SHA-256</li>
+              <li>Das Zeitstempel-Token hängt am PDF und lässt sich mit <code>openssl ts -verify</code> prüfen</li>
+              <li>Reproduzierbar: Derselbe Stand ergibt dasselbe PDF mit demselben SHA-256</li>
+              <li>Ausstiegs-Export der ganzen Organisation, jederzeit und vollständig</li>
+            </ul>
+          </div>
+          <figure class="shot"><div class="shot-frame"><picture><source media="(max-width: 760px)" srcset="bilder/nachweis-720.webp" width="623" height="383"><img src="bilder/nachweis-1440.webp" width="1168" height="383" alt="Liste der Nachweise mit Umfang, Kettenstand „Kette geprüft“, Status und SHA-256-Prüfsumme je PDF" loading="lazy" decoding="async"></picture></div><figcaption>Nachweise mit Kettenstand und SHA-256. In der Testumgebung ist die Zeitstempelstelle abgeschaltet, im Betrieb steht hier der RFC-3161-Zeitstempel.</figcaption></figure>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec" id="funktionen" aria-labelledby="fh">
+    <div class="wrap">
+      <p class="kicker">Funktionen</p>
+      <h2 id="fh">Vom Baumkataster bis zum Lagebericht.</h2>
+      <p class="sec-lead">Zettel, Excel-Listen und Mails mit Fotos werden überflüssig. Die Weboberfläche läuft am Rechner, Tablet und Handy, alle Texte sind Deutsch.</p>
+      <div class="grid">
+        <div class="cell"><span class="tag tag-neu">Neu</span><h3>Lagebild</h3><p>Startseite der FM: überfällige und bald fällige Kontrollen, offene Mängel nach Dringlichkeit, gesperrte Geräte, Ampel je Gebiet als Liste und Karte, Warnungen und Termintreue je Dienstleister.</p></div>
+        <div class="cell"><span class="tag tag-neu">Neu</span><h3>Rahmenaufträge</h3><p>Wiederkehrende Kontrollen planen statt einzeln anlegen: je Fachschale, Prüfart, Gebiet und Dienstleister, als Entwurf oder automatisch freigegeben. Mit Vorschau des nächsten Laufs.</p></div>
+        <div class="cell"><span class="tag tag-neu">Neu</span><h3>Lagebericht als PDF</h3><p>Stand der Verkehrssicherung zum Stichtag für Leitung und Gremien. Auf Knopfdruck oder monatlich, mit SHA-256 und Zeitstempel wie jeder Nachweis.</p></div>
+        <div class="cell"><span class="tag tag-offline">Offline</span><h3>Feldarbeit in QField</h3><p>Auftragspakete mit GeoPackage, QGIS-Projekt und Formular. Werkspur-Leiste mit Fortschritt, „Nächster“ und Schnellerfassung o.&nbsp;B. Rückgabe als Datei oder über QFieldCloud.</p></div>
+        <div class="cell"><h3>Baumkontrolle nach FLL</h3><p>Fachschale angelehnt an die FLL-Baumkontrollrichtlinie: Vitalität, Belaubung, Befunde, Maßnahmen mit Frist, Gefahr im Verzug und Kontrollintervall je Baum.</p></div>
+        <div class="cell"><h3>Spielplätze nach DIN EN 1176-7</h3><p>Spielplätze und Spielgeräte mit drei Prüfarten: Routine (7 Tage), operativ (3 Monate), Hauptinspektion (12 Monate). Ein Gerät mit „Mangel – sperren“ bleibt gesperrt, bis der Mangel erledigt ist.</p></div>
+        <div class="cell"><h3>Maßnahmen und Abnahme</h3><p>Offene Mängel bündeln Sie zu einem Maßnahmenauftrag. Der Dienstleister sieht das Vorher-Foto und meldet mit Nachher-Foto zurück. Die FM nimmt ab, der Nachweis zeigt Meldung und Abnahme.</p></div>
+        <div class="cell"><h3>Qualifikation</h3><p>Dienstleister führen Mitarbeitende mit Qualifikationen, etwa FLL-zertifizierter Baumkontrolleur oder Spielplatzprüfer nach DIN 79161. Der Nachweis nennt die Qualifikation am Kontrolltag.</p></div>
+        <div class="cell"><h3>Eigener Bauhof</h3><p>Der Bauhof bekommt Aufträge wie ein Dienstleister. Die FM legt Betrieb und Konten selbst an, jedes Konto setzt sein Passwort über einen Link, der nur einmal gilt.</p></div>
+        <div class="cell"><h3>Karte mit Bearbeitungsstand</h3><p>Objekte nach Stand eingefärbt, Gebietsumrisse, Legende mit Anzahlen. Hintergrund amtlich von basemap.de, Landes-Luftbilder per WMS einstellbar.</p></div>
+        <div class="cell"><h3>Fachschalen</h3><p>Gewerke als lesbare YAML-Dateien, versioniert und nach Veröffentlichung unveränderbar. Ein Nachweis belegt, welche Fassung galt. Mitgeliefert: Baumkontrolle, Spielplatz, Kontrollgang.</p></div>
+        <div class="cell"><span class="tag tag-ki">KI</span><h3>KI-Assistent über MCP</h3><p>Fragen Sie in Claude oder einem anderen KI-Assistenten: „Welche Baumkontrollen in der Altstadt sind überfällig?“ Der Assistent sieht nur, was Sie sehen dürfen. Aufträge entwirft er, freigeben kann nur ein Mensch.</p></div>
+        <div class="cell"><h3>Datenschutz eingebaut</h3><p>Namen werden nach der Frist pseudonymisiert, Fotos lassen sich löschen, die Kette bleibt gültig. Termintreue wertet Werkspur nur je Organisation aus, nie je Person.</p></div>
+        <div class="cell"><h3>Mehrere Organisationen</h3><p>Eine Instanz trägt beliebig viele FM und Dienstleister. Ein Dienstleister sieht alle Aufträge seiner Auftraggeber in einer Liste, aber nur die Objekte seiner Aufträge.</p></div>
+        <div class="cell"><span class="tag tag-bald">In Kürze</span><h3>Austauschprofile und Kartendienst</h3><p>Bestandsdaten im Format fremder Kataster ein- und ausspielen, etwa der Open-Data-Baumkataster von Berlin und Dortmund. Das kommunale GIS liest den Kontrollstand über OGC API Features.</p></div>
+      </div>
+      <p class="note">Fachschalen bilden Richtlinien und Normen ab, ersetzen sie aber nicht. Intervalle und Wertelisten sind Vorschläge, die Sie vor dem Einsatz fachlich prüfen.</p>
+
+      <div class="pair">
+        <figure class="shot"><div class="shot-frame"><picture><source media="(max-width: 760px)" srcset="bilder/karte-720.webp" width="720" height="775"><img src="bilder/karte-1440.webp" width="1168" height="737" alt="Karte mit 238 Objekten der Demodaten als Statussymbole in drei Gebieten, daneben die Legende mit Anzahlen je Stand" loading="lazy" decoding="async"></picture></div><figcaption>Karte mit Bearbeitungsstand: gesperrt, Mangel, überfällig, bald fällig, in Ordnung. Testaufnahme ohne Hintergrundkarte, im Betrieb liegt basemap.de darunter.</figcaption></figure>
+      </div>
+
+      <h3 class="roles-title">Wer was macht</h3>
+      <div class="roles">
+        <div class="role"><h3>FM-Administration</h3><p>Organisation, Konten und Aufbewahrungsfristen pflegen, Dienstleister und eigenen Betrieb einladen.</p></div>
+        <div class="role"><h3>FM-Sachbearbeitung</h3><p>Bestand importieren, Aufträge und Rahmenaufträge steuern, Konflikte entscheiden, abnehmen, Nachweise erzeugen.</p></div>
+        <div class="role"><h3>Dienstleister</h3><p>Aufträge aller Auftraggeber an einem Ort, Pakete holen und zurückgeben, Mitarbeitende und Qualifikationen pflegen.</p></div>
+        <div class="role"><h3>Feldkraft</h3><p>Paket in QField abarbeiten, auch offline. Unter „Meine Rückmeldungen“ nur die eigenen Kontrollen.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec-sunken" id="betrieb" aria-labelledby="bh">
+    <div class="wrap">
+      <p class="kicker">Betrieb</p>
+      <h2 id="bh">Selbst betreiben oder hosten lassen.</h2>
+      <p class="sec-lead">Derselbe Code in beiden Fällen, ohne Open-Core-Bezahlteil. Zugriffe auf Daten fremder Organisationen beantwortet Werkspur so, als gäbe es sie nicht.</p>
+      <div class="two">
+        <article class="card">
+          <h3>Selbst betreiben</h3>
+          <p>Ein Server mit Docker genügt. Der Stack bringt PostgreSQL mit PostGIS, die API, die Weboberfläche hinter Caddy, die Worker für Paketbau mit QGIS und PDF sowie den MCP-Dienst mit.</p>
+<pre><code><span class="c"># Code holen und Zugangsdaten setzen</span>
+git clone https://github.com/BroetzensIT-CattlesCows/werkspur.git
+cd werkspur
+cp .env.example .env    <span class="c"># Geheimnisse und Passwörter eintragen</span>
+
+<span class="c"># starten: db, migrate, app, worker, caddy …</span>
+docker compose up -d --build
+
+<span class="c"># erste FM und Betreiberkonto anlegen</span>
+docker compose exec app python manage.py werkspur_einrichten \
+  --fm-name "Stadt Musterhausen" --email po@musterhausen.de
+
+<span class="c"># optional: Demodaten einspielen</span>
+docker compose exec app python manage.py demodaten_laden</code></pre>
+          <ul class="checks">
+            <li>HTTPS über Caddy, auch hinter Nginx Proxy Manager</li>
+            <li>Anmeldung mit eigenen Konten, Single Sign-on per OIDC optional</li>
+            <li>Zeitstempel standardmäßig über einen öffentlichen Dienst, qualifizierte Stelle einstellbar</li>
+            <li>Platz einplanen: das QGIS-Image ist etwa 3&nbsp;GB groß</li>
+            <li>Schritt-für-Schritt-Abnahmen für jedes Teilprojekt im Repository</li>
+          </ul>
+          <a class="btn" href="https://github.com/BroetzensIT-CattlesCows/werkspur#readme">Anleitung im README</a>
+        </article>
+        <article class="card card-brand">
+          <h3>Gehostet</h3>
+          <p>Broetzens IT aus Kassel betreibt Werkspur für Ihre Organisation: Einrichtung, Updates, Sicherungen und Zeitstempel inklusive.</p>
+          <ul class="checks">
+            <li>Übernahme Ihres Baum- und Spielplatzbestands aus dem Kataster</li>
+            <li>Einladung Ihrer Dienstleister und des eigenen Bauhofs</li>
+            <li>Ausstiegs-Export jederzeit, ohne Rückfrage</li>
+            <li>Vorführung mit Demodaten oder Ihrem eigenen Bestand</li>
+          </ul>
+          <a class="btn btn-primary" href="mailto:hallo@broetzens.de?subject=Werkspur%20Vorf%C3%BChrung">Vorführung anfragen</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="schnittstelle" aria-labelledby="sh">
+    <div class="wrap api">
+      <div>
+        <p class="kicker">Schnittstelle</p>
+        <h2 id="sh">Ihre Daten bleiben Ihre Daten.</h2>
+        <p>Die Weboberfläche nutzt selbst nur die öffentliche REST-API. Alles, was Sie dort sehen, erreichen auch Ihre Skripte, QGIS oder n8n: mit einem persönlichen API-Token, das Sie jederzeit widerrufen.</p>
+        <p>Die API ist mit OpenAPI beschrieben und versioniert, Geodaten kommen als GeoJSON mit <code>bbox</code> und Seitenlinks, Fehler als Problem Details nach RFC&nbsp;9457. Rein und raus gehen die Daten über offene Formate:</p>
+        <ul class="formats" aria-label="Formate">
+          <li>GeoJSON</li><li>GeoPackage</li><li>CSV</li><li>Shapefile</li><li>KML</li><li>GML</li><li>FlatGeobuf</li><li>PDF</li><li>QGIS-Projekt</li>
+        </ul>
+        <div class="soon">
+          <span class="tag tag-bald">In Kürze</span>
+          <p>Austauschprofile für fremde Kataster (mitgeliefert: Open-Data-Baumkataster Berlin und Dortmund) und OGC API Features, damit QGIS und ArcGIS den Kontrollstand live lesen.</p>
+        </div>
+      </div>
+      <div>
+<pre><code><span class="c"># Aufträge lesen (REST)</span>
+curl -H "Authorization: Bearer $TOKEN" \
+  https://ihre-adresse.de/api/v1/auftraege
+
+<span class="c"># KI-Assistent verbinden (MCP, z. B. Claude Code)</span>
+claude mcp add --transport http werkspur \
+  https://ihre-adresse.de/mcp \
+  --header "Authorization: Bearer $TOKEN"</code></pre>
+        <div class="tbl">
+          <table>
+            <caption class="kicker" style="text-align:left;caption-side:top;padding-bottom:.4rem">Werkzeuge für KI-Assistenten (MCP)</caption>
+            <thead><tr><th scope="col">Werkzeug</th><th scope="col">liefert</th></tr></thead>
+            <tbody>
+              <tr><td><code>auftraege_suchen</code></td><td>Aufträge mit Status, Frist und nächsten Rahmenläufen</td></tr>
+              <tr><td><code>objekte_im_gebiet</code></td><td>Zusammenfassung und Objektliste eines Gebiets</td></tr>
+              <tr><td><code>ueberfaellige_kontrollen</code></td><td>Objekte nach Überfälligkeit sortiert</td></tr>
+              <tr><td><code>maengel_auswerten</code></td><td>offene Mängel nach Art, Frist und Objekt</td></tr>
+              <tr><td><code>nachweis_abrufen</code></td><td>Zusammenfassung und Link zum Nachweis</td></tr>
+              <tr><td><code>auftrag_entwerfen</code></td><td>nur einen Entwurf, die Freigabe macht ein Mensch</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec cta" aria-labelledby="ch">
+    <div class="wrap">
+      <h2 id="ch">Die nächste Baumkontrolle mit Nachweis statt Aktenordner.</h2>
+      <div class="ctas">
+        <a class="btn" href="https://github.com/BroetzensIT-CattlesCows/werkspur/releases">Zu den Releases</a>
+        <a class="btn btn-ghost" href="mailto:hallo@broetzens.de?subject=Werkspur%20Vorf%C3%BChrung">Vorführung anfragen</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <p><strong>Werkspur</strong> <span class="sender">· ein Produkt von Broetzens IT</span>, Kassel</p>
+      <p>Diese Seite lädt nichts von Dritten: keine Cookies, keine Analyse, Schriften liegen auf dem Server.</p>
+      <p>Werkspur-Logo und Name sind Marken von Broetzens IT. Bildschirmfotos zeigen Demodaten.</p>
+    </div>
+    <div>
+      <p><a href="https://github.com/BroetzensIT-CattlesCows/werkspur">Code</a> · <a href="https://github.com/BroetzensIT-CattlesCows/werkspur/releases">Releases</a> · <a href="https://github.com/BroetzensIT-CattlesCows/werkspur/issues">Fehler melden</a></p>
+      <p><a href="https://broetzens.de/impressum">Impressum</a> · <a href="https://broetzens.de/datenschutz">Datenschutz</a> · <a href="https://broetzens.de/agb">AGB</a></p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
