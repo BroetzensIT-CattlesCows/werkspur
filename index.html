@@ -26,7 +26,7 @@
   "description": "Offene Plattform für Verkehrssicherungskontrollen: Bäume nach FLL, Spielplätze nach DIN EN 1176, Feldarbeit offline in QField, Mängel und Maßnahmen bis zur Abnahme, Nachweis mit Hash-Kette und RFC-3161-Zeitstempel, REST-API und MCP.",
   "isAccessibleForFree": true,
   "license": "https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12",
-  "codeRepository": "https://github.com/BroetzensIT-CattlesCows/werkspur-release",
+  "codeRepository": "https://github.com/BroetzensIT-CattlesCows/werkspur",
   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
   "author": {"@type": "Organization", "name": "Broetzens IT", "address": {"@type": "PostalAddress", "addressLocality": "Kassel", "addressCountry": "DE"}}
 }
@@ -278,7 +278,7 @@ footer p{margin:0 0 .4rem}
       <a href="#funktionen">Funktionen</a>
       <a href="#betrieb">Betrieb</a>
       <a href="#schnittstelle">Schnittstelle</a>
-      <a class="keep" href="https://github.com/BroetzensIT-CattlesCows/werkspur-release/releases">Releases</a>
+      <a class="keep" href="https://github.com/BroetzensIT-CattlesCows/werkspur/releases">Releases</a>
     </nav>
   </div>
 </header>
@@ -291,7 +291,7 @@ footer p{margin:0 0 .4rem}
         <h1 id="hh">Bäume und Spielplätze kontrollieren. Mängel beheben lassen. Prüfbar nachweisen.</h1>
         <p class="lead">Werkspur bringt Kataster, Aufträge, Mängel und Nachweise an einen Ort. Kontrolliert wird draußen in QField, auch ohne Netz. Sie betreiben Werkspur selbst oder lassen es hosten.</p>
         <div class="ctas">
-          <a class="btn btn-primary" href="https://github.com/BroetzensIT-CattlesCows/werkspur-release/releases">Releases auf GitHub</a>
+          <a class="btn btn-primary" href="https://github.com/BroetzensIT-CattlesCows/werkspur/releases">Releases auf GitHub</a>
           <a class="btn" href="#betrieb">Selbst betreiben</a>
         </div>
         <p class="audience">Für Kommunen und Facility Management, Baumpflege- und Spielplatzdienstleister und den eigenen Bauhof.<br>Code unter EUPL-1.2, Fachschalen und Doku unter CC&nbsp;BY&nbsp;4.0.</p>
@@ -452,7 +452,7 @@ footer p{margin:0 0 .4rem}
           <h3>Selbst betreiben</h3>
           <p>Ein Server mit Docker genügt. Der Stack bringt PostgreSQL mit PostGIS, die API, die Weboberfläche hinter Caddy, die Worker für Paketbau mit QGIS und PDF sowie den MCP-Dienst mit.</p>
 <pre><code><span class="c"># Betriebspaket holen und Zugangsdaten setzen</span>
-curl -LO https://github.com/BroetzensIT-CattlesCows/werkspur-release/releases/latest/download/werkspur.tar.gz
+curl -LO https://github.com/BroetzensIT-CattlesCows/werkspur/releases/latest/download/werkspur.tar.gz
 tar xzf werkspur.tar.gz &amp;&amp; cd werkspur-*
 cp .env.example .env
 openssl rand -base64 48   <span class="c"># als WERKSPUR_SECRET_KEY eintragen</span>
@@ -474,7 +474,7 @@ docker compose exec app python manage.py demodaten_laden</code></pre>
             <li>Zeitstempel standardmäßig über einen öffentlichen Dienst, qualifizierte Stelle einstellbar</li>
             <li>Platz einplanen: das QGIS-Image ist etwa 3&nbsp;GB groß</li>
           </ul>
-          <a class="btn" href="https://github.com/BroetzensIT-CattlesCows/werkspur-release/blob/main/docs/betrieb-und-update.md">Anleitung für Betrieb und Update</a>
+          <a class="btn" href="https://github.com/BroetzensIT-CattlesCows/werkspur/blob/main/docs/betrieb-und-update.md">Anleitung für Betrieb und Update</a>
         </article>
         <article class="card card-brand">
           <h3>Gehostet</h3>
@@ -505,7 +505,7 @@ docker compose exec app python manage.py demodaten_laden</code></pre>
           <span class="tag tag-neu">Neu</span>
           <p>Austauschprofile für fremde Kataster (mitgeliefert: Open-Data-Profile Berlin und Dortmund) und ein Kartendienst nach OGC API Features: QGIS und ArcGIS lesen den Kontrollstand live, mit Dienstzugang oder, wenn Sie es einschalten, als Open Data. Der Dienst hat den offiziellen OGC-Konformitätstest bestanden.</p>
         </div>
-        <a class="btn" href="https://github.com/BroetzensIT-CattlesCows/werkspur-release/blob/main/docs/integration/README.md">Doku der Schnittstellen</a>
+        <a class="btn" href="https://github.com/BroetzensIT-CattlesCows/werkspur/blob/main/docs/integration/README.md">Doku der Schnittstellen</a>
       </div>
       <div>
 <pre><code><span class="c"># Aufträge lesen (REST)</span>
@@ -538,7 +538,7 @@ claude mcp add --transport http werkspur \
     <div class="wrap">
       <h2 id="ch">Die nächste Baumkontrolle mit Nachweis statt Aktenordner.</h2>
       <div class="ctas">
-        <a class="btn" href="https://github.com/BroetzensIT-CattlesCows/werkspur-release/releases">Zu den Releases</a>
+        <a class="btn" href="https://github.com/BroetzensIT-CattlesCows/werkspur/releases">Zu den Releases</a>
         <a class="btn btn-ghost" href="mailto:hallo@broetzens.de?subject=Werkspur%20Vorf%C3%BChrung">Vorführung anfragen</a>
       </div>
     </div>
@@ -553,7 +553,7 @@ claude mcp add --transport http werkspur \
       <p>Werkspur-Logo und Name sind Marken von Broetzens IT. Bildschirmfotos zeigen Demodaten.</p>
     </div>
     <div>
-      <p><a href="https://github.com/BroetzensIT-CattlesCows/werkspur-release">Betriebspaket</a> · <a href="https://github.com/BroetzensIT-CattlesCows/werkspur-release/releases">Releases</a> · <a href="https://github.com/BroetzensIT-CattlesCows/werkspur-release/issues">Fehler melden</a></p>
+      <p><a href="https://github.com/BroetzensIT-CattlesCows/werkspur">Betriebspaket</a> · <a href="https://github.com/BroetzensIT-CattlesCows/werkspur/releases">Releases</a> · <a href="https://github.com/BroetzensIT-CattlesCows/werkspur/issues">Fehler melden</a></p>
       <p><a href="https://broetzens.de/impressum">Impressum</a> · <a href="https://broetzens.de/datenschutz">Datenschutz</a> · <a href="https://broetzens.de/agb">AGB</a></p>
     </div>
   </div>
