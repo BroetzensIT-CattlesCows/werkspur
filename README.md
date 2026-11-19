@@ -35,8 +35,6 @@ einer eigenen Domain (dann `CNAME`-Datei ergänzen).
   vor dem Veröffentlichen anlegen oder die Links in `index.html` anpassen (Suchen nach
   `BroetzensIT-CattlesCows/werkspur`). Der Installationsblock unter „Selbst betreiben“ nutzt
   `git clone` dieses Repositorys.
-- **„In Kürze“:** Austauschprofile und OGC API Features (Teilprojekt 9) sind als „In Kürze“
-  gekennzeichnet. Nach Fertigstellung die Marken in „Neu“ ändern.
 - **og:image** ist relativ angegeben; manche Dienste verlangen eine absolute URL. Nach dem
   Veröffentlichen ggf. auf die volle Pages-Adresse setzen.
 
